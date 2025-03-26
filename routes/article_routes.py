@@ -1,11 +1,12 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from datetime import datetime, timedelta
 from content_agent import ContentAgent
 from clients.wordpress_client import get_categories, publish_post
 from settings import Settings
 
-app = FastAPI()
+router = APIRouter()  # <-- Alterado de FastAPI() para APIRouter()
+
 settings = Settings()
 
 class ArticleRequest(BaseModel):
@@ -13,7 +14,7 @@ class ArticleRequest(BaseModel):
     num_articles: int  # Number of articles to create
     future_dates: bool = False  # If True, schedules the posts for the future
 
-@app.post("/process-article")
+@router.post("/process-article")  # <-- Substituído @app por @router
 def process_article(request: ArticleRequest):
     try:
         topic = request.topic
