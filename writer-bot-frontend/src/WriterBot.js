@@ -3,6 +3,8 @@ import axios from 'axios';
 
 const WriterBot = () => {
     const [topic, setTopic] = useState('');
+    const [numArticles, setNumArticles] = useState(1);
+    const [futureDates, setFutureDates] = useState(false);
     const [message, setMessage] = useState('');
 
     const handleSetup = async () => {
@@ -32,6 +34,19 @@ const WriterBot = () => {
         }
     };
 
+    const handleProcessArticle = async () => {
+        try {
+            const response = await axios.post('http://localhost:8000/process-article', {
+                topic,
+                num_articles: numArticles,
+                future_dates: futureDates,
+            });
+            setMessage(`Success: ${response.data.message}`);
+        } catch (error) {
+            setMessage(`Error: ${error.response?.data?.detail || error.message}`);
+        }
+    };
+
     return (
         <div>
             <h1>Writer Bot</h1>
@@ -45,6 +60,29 @@ const WriterBot = () => {
             <button onClick={() => handlePublish(false)}>Publish Past Articles</button>
             <button onClick={() => handlePublish(true)}>Publish Future Articles</button>
             <button onClick={handleRevise}>Revise Published Posts</button>
+
+            <h2>Process Article</h2>
+            <div>
+                <label>Number of Articles:</label>
+                <input
+                    type="number"
+                    value={numArticles}
+                    onChange={(e) => setNumArticles(Number(e.target.value))}
+                    min="1"
+                />
+            </div>
+            <div>
+                <label>
+                    <input
+                        type="checkbox"
+                        checked={futureDates}
+                        onChange={(e) => setFutureDates(e.target.checked)}
+                    />
+                    Schedule for Future Dates
+                </label>
+            </div>
+            <button onClick={handleProcessArticle}>Process Articles</button>
+
             <p>{message}</p>
         </div>
     );
