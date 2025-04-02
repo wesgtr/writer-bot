@@ -2,10 +2,19 @@ from fastapi import FastAPI, HTTPException
 from routes.article_routes import router as article_router
 from settings import Settings
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 
 settings = Settings()
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Replace "*" with specific origins if needed
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class SetupRequest(BaseModel):
     topic: str
@@ -34,3 +43,5 @@ app.include_router(article_router)
 @app.get("/ping2")
 def ping():
     return {"message": "API2 is running!"}
+
+
